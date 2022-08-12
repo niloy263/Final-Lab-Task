@@ -1,0 +1,144 @@
+<h1 align="center">Owner Page</h1>
+
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="ownerdesign.css">
+</head>
+
+<body>
+    <div class="menubar">
+        <a href="update.php">Home</a>
+
+        <div class="menubar_content">
+            <a href="#">My personal Information</a>
+            <div class="menubar_subcontent">
+                <a href="AboutMe.php">My details</a>
+                <a href="ChangePassword.php">Change my password</a>
+            </div>
+        </div>
+
+        <div class="menubar_content2">
+            <a href="#">Other user information</a>
+            <div class="menubar_subcontent2">
+                <a href="ShowAllCustomer.php">Show all customer</a>
+                <a href="ShowAllDriver.php">Show all driver</a>
+                <a href="ShowAllOnwer.php">Show all owner</a>
+            </div>
+        </div>
+
+        <div class="menubar_content3">
+            <a href="#">All car information</a>
+            <div class="menubar_subcontent3">
+                <a href="ShowAllCar.php">Show all car</a>
+                <a href="AddCar.php">Add car</a>
+                <a href="EditCar.php">Edit any car</a>
+            </div>
+        </div>
+
+        <a href="login.php">Logout</a>
+    </div>
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+</body>
+
+
+
+
+
+
+
+
+
+<?php
+session_start();
+echo "<h3 align='right' style='color:green;'>login as (" . $_SESSION['user'] . ") </h3>";
+
+$cname = $cmodel = $cprice = $cphone = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {        //$_SERVER["REQUEST_METHOD"] is default function......this function sent data by post method from php code
+
+    $cname = input_data($_POST["cname"]);
+    $cmodel = input_data($_POST["cmodel"]);
+    $cprice = input_data($_POST["cprice"]);
+    $cphone = input_data($_POST["cphone"]);
+}
+function input_data($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
+?>
+
+<table align="center">
+    <tr>
+        <th></th>
+    </tr>
+    <tr>
+
+        <td>
+            <br><br>
+            <h3><u>Edit car:</u></h3><br>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> ">
+                Enter name which car do you want to edit: <div class="form-control"> <input type="text" name="cname"> <br>
+                <br></div>
+
+                Change model:<div class="form-control"> <input type="text" name="cmodel"> <br></div>
+                Change rent price: <div class="form-control"> <input type="text" name="cprice"> <br></div>
+                Change contact no. <div class="form-control"> <input type="text" name="cphone"> <br></div>
+                <input class="buttonMain1" style="display:block; margin: 0 auto;" type="submit" name="editCarBtn" value="Edit car">
+<br>                
+<input class="buttonMain1" style="display:block; margin: 0 auto;" type="submit" id="refresh" name="refresh" value="Refresh">
+            </form>
+        </td>
+        <br>
+    </tr>
+</table>
+
+
+<?php include '../Controller/showAllCarC.php'; ?>
+
+<body <button id="refresh"></button>
+    <div id="main">
+    </div>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#load").on("click", function(e) {
+                $.ajax({
+                    url: "showAllCarC.php",
+                    type: "post",
+                    success: function(data) {
+                        $("#main").html(data);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+
+<?php
+
+if (isset($_POST['editCarBtn'])) {
+
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "vehicle_rental_application";
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Connection not found:" . $conn->connect_error);
+    }
+    $q = "update all_car set model='" . $cmodel . "', price='" . $cprice . "', phone='" . $cphone . "' where name='" . $cname . "'";
+    $result = $conn->query($q);
+    if ($result)
+        echo "<h3 align='center' style='color:green;'> <b>Car data updated</b> </h3>";
+    else
+        echo "<h3 align='center' style='color:red;'> <b>Car not found</b> </h3>";
+
+    $conn->close();
+}
+
+?>
